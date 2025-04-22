@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion d'Écriture - Gestion de Finance</title>
+
+    <!-- Styles CSS -->
+<link th:href="@{/assets/css/google-apis.css}" rel="stylesheet">
+<link th:href="@{/assets/css/bootstrap.css}" rel="stylesheet">
+<link th:href="@{/assets/vendors/iconly/bold.css}" rel="stylesheet">
+<link th:href="@{/assets/vendors/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet">
+<link th:href="@{/assets/vendors/bootstrap-icons/bootstrap-icons.css}" rel="stylesheet">
+<link th:href="@{/assets/css/app.css}" rel="stylesheet">
+<link th:href="@{/assets/images/favicon.svg}" rel="shortcut icon" type="image/x-icon">
+
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title">Menu</li>
+                        <li class="sidebar-item">
+                            <a th:href="@{ / }" class="sidebar-link">
+                                <i class="bi bi-file-earmark-plus"></i>
+                                <span>Insertion</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item" th:classappend="${#strings.equals(page, 'etatFinancier') ? 'active' : ''}">
+                            <a th:href="@{/etatFinancier}" class="sidebar-link">
+                                <i class="bi bi-table"></i>
+                                <span>Etat Financier</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item" th:classappend="${#strings.equals(page, 'analyse') ? 'active' : ''}">
+                            <a th:href="@{/analyse}" class="sidebar-link">
+                                <i class="bi bi-bar-chart-line-fill"></i>
+                                <span>Analyse</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+            </div>
+        </div>
+        
+        <div id="main">
+            <header class="mb-3">
+                <a href="#" class="burger-btn d-block d-xl-none">
+                    <i class="bi bi-justify fs-3"></i>
+                </a>
+            </header>
+
+            <div class="page-heading">
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6 order-md-1 order-last">
+                            <h3>Insertion d'Écriture</h3>
+                            <p class="text-subtitle text-muted">Ajoutez une nouvelle écriture avec ses détails</p>
+                        </div>
+                        <div class="col-12 col-md-6 order-md-2 order-first">
+                            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Insertion</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <section id="basic-vertical-layouts">
+                    <div class="row match-height">
+                        <div class="col-md-8 col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Formulaire d'Insertion</h4>
+                                </div>
+                                <!-- Message d'erreur s'il y en a -->
+                                <div th:if="${error}" class="alert alert-danger">
+                                    <p th:text="${error}"></p>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <form class="form form-vertical" th:action="@{/submitForm}" method="post">
+                                            <div class="form-body">
+                                                <div class="row">
+                                                    <!-- Date -->
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="date">Date</label>
+                                                            <input type="date" id="date" class="form-control" name="date" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Montant -->
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="montant">Montant</label>
+                                                            <input type="number" id="montant" class="form-control" name="montant" min="0" step="0.01" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label for="description">Description</label>
+                                                            <textarea id="description" class="form-control" name="description" rows="3" required></textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Insertion d'Écriture Formulaire -->
+                                                    <div id="rubriques-container">
+                                                        <div class="form-group">
+                                                            <label for="idCategorie">Catégorie</label>
+                                                            <select class="form-select" id="idCategorie" name="idCategorie">
+                                                                <option value="">Sélectionner une catégorie</option>
+                                                                <option th:each="categorie : ${categories}" th:value="${categorie.id}" th:text="${categorie.nom}"></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    
+                                                    
+
+                                                    <!-- Boutons Ajouter/Supprimer -->
+                                                    <div class="col-12 d-flex justify-content-start mt-2">
+                                                        <button type="button" class="btn btn-success me-1" id="btn-add-rubrique">Ajouter</button>
+                                                        <button type="button" class="btn btn-danger me-1" id="btn-remove-rubrique">Supprimer</button>
+                                                    </div>
+
+                                                    <!-- Bouton soumettre -->
+                                                    <div class="col-12 d-flex justify-content-end mt-3">
+                                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <footer>
+                <div class="footer clearfix mb-0 text-muted">
+                    <div class="float-start">
+                        <p>2025 &copy; Finalyze</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:src="@{/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/vendors/apexcharts/apexcharts.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rubriquesContainer = document.getElementById("rubriques-container");
+            const btnAddRubrique = document.getElementById("btn-add-rubrique");
+            const btnRemoveRubrique = document.getElementById("btn-remove-rubrique");
+    
+            // Ajout d'une rubrique enfant (sous-catégorie, poste, compte)
+            btnAddRubrique.addEventListener("click", function () {
+                const selects = rubriquesContainer.querySelectorAll("select");
+                const lastSelect = selects[selects.length - 1];
+                const selectedType = lastSelect.name.replace("id", "").toLowerCase(); // Déterminer le type sélectionné
+                const selectedId = lastSelect.value;
+    
+                if (!selectedId) {
+                    alert("Veuillez sélectionner une option avant d'ajouter une rubrique enfant.");
+                    return;
+                }
+    
+                // Empêcher l'ajout d'une rubrique enfant si c'est un "compte"
+                
+                const newSelectLabel = document.createElement("label");
+                newSelectLabel.textContent = selectedType === "categorie" ? "Sous-catégorie" : 
+                selectedType === "souscategorie" ? "Poste" : 
+                selectedType === "poste" ? "Compte" : "Compte";
+
+                const lien = selectedType === "categorie" ? "categorie" : 
+                selectedType === "souscategorie" ? "souscategorie" : 
+                selectedType === "poste" ? "poste" : "compte";
+
+                const nom = selectedType === "categorie" ? "SousCategorie" : 
+                selectedType === "souscategorie" ? "Poste" : 
+                selectedType === "poste" ? "Compte" : "Compte";
+
+                if (selectedType === "compte") {
+                    alert("Vous ne pouvez pas ajouter de sous-rubriques sous un compte.");
+                    return;
+                }    
+                // Appeler l'API pour charger les enfants
+                fetch(`/api/getEnfants?type=${lien.toLowerCase()}&id=${selectedId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            alert("Aucun enfant disponible pour la sélection actuelle.");
+                            return;
+                        }
+    
+                        // Ajouter un nouveau select avec les enfants
+                        const newSelectDiv = document.createElement("div");
+                        newSelectDiv.classList.add("form-group", "mt-2");
+    
+                        newSelectDiv.appendChild(newSelectLabel);
+    
+                        const newSelect = document.createElement("select");
+                        newSelect.classList.add("form-select");
+                        newSelect.name = `id${nom}`;
+                        data.forEach(item => {
+                            const option = document.createElement("option");
+                            option.value = item.id;
+                            option.textContent = item.nom;
+                            newSelect.appendChild(option);
+                        });
+                        newSelectDiv.appendChild(newSelect);
+    
+                        rubriquesContainer.appendChild(newSelectDiv);
+                    });
+            });
+    
+            // Suppression d'une rubrique enfant
+            btnRemoveRubrique.addEventListener("click", function () {
+                const selects = rubriquesContainer.querySelectorAll(".form-group");
+                if (selects.length > 1) {
+                    rubriquesContainer.removeChild(selects[selects.length - 1]);
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>

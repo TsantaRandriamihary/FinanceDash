@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Finance</title>
+
+    <!-- Styles CSS -->
+    <link th:href="@{/assets/css/google-apis.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/assets/vendors/iconly/bold.css}" rel="stylesheet">
+    <link th:href="@{/assets/vendors/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet">
+    <link th:href="@{/assets/vendors/bootstrap-icons/bootstrap-icons.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/app.css}" rel="stylesheet">
+    <link th:href="@{/assets/images/favicon.svg}" rel="shortcut icon" type="image/x-icon">
+
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title">Menu</li>
+                        <li class="sidebar-item">
+                            <a th:href="@{ / }" class="sidebar-link">
+                                <i class="bi bi-file-earmark-plus"></i>
+                                <span>Insertion</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item" th:classappend="${#strings.equals(page, 'etatFinancier') ? 'active' : ''}">
+                            <a th:href="@{/etatFinancier}" class="sidebar-link">
+                                <i class="bi bi-table"></i>
+                                <span>Etat Financier</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item" th:classappend="${#strings.equals(page, 'analyse') ? 'active' : ''}">
+                            <a th:href="@{/analyse}" class="sidebar-link">
+                                <i class="bi bi-bar-chart-line-fill"></i>
+                                <span>Analyse</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+            </div>
+        </div>
+        
+        <div id="main">
+            <header class="mb-3">
+                <a href="#" class="burger-btn d-block d-xl-none">
+                    <i class="bi bi-justify fs-3"></i>
+                </a>
+            </header>
+            <div class="page-heading">
+                <div class="page-title">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <h3>Analyse</h3>
+                            <p class="text-subtitle text-muted">Analyse Financière de l'entreprise</p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a href="index.html">Home</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">Analyse</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <!-- Formulaire de sélection de date -->
+                    <div class="col-6">
+                        <section id="basic-vertical-layouts">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form action="/analyse" method="post" class="form form-vertical">
+                                        <div class="form-body">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for="jour">Sélectionner une date</label>
+                                                        <input type="date" id="jour" name="date" class="form-control" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 d-flex justify-content-center">
+                                                    <button type="submit" class="btn btn-primary me-1 mb-1">Analyser</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div th:if="${error}" class="alert alert-danger mt-3">
+                                        <p th:text="${error}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <section class="section">
+                <div class="row">
+                    <!-- Rentabilité -->
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Rentabilité</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="multiple"></div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted font-semibold">Marge nette</h6>
+                                        <h6 id="margeNette" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 0 ? analyses[0].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 0 ? analyses[0].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 0 ? analyses[0].solution : 'N/A'}"></span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted font-semibold">ROA</h6>
+                                        <h6 id="ROA" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 1 ? analyses[1].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 1 ? analyses[1].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 1 ? analyses[1].solution : 'N/A'}"></span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted font-semibold">ROE</h6>
+                                        <h6 id="ROE" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 2 ? analyses[2].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 2 ? analyses[2].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 2 ? analyses[2].solution : 'N/A'}"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Endettement -->
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Endettement</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="basic"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted font-semibold">Endettement global</h6>
+                                        <h6 id="endettementGlobal" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 5 ? analyses[5].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 5 ? analyses[5].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 5 ? analyses[5].solution : 'N/A'}"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted font-semibold">Couverture</h6>
+                                        <h6 id="couverture" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 6 ? analyses[6].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 6 ? analyses[6].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 6 ? analyses[6].solution : 'N/A'}"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Liquidité -->
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Liquidité</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="simpleDonut"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted font-semibold">Liquidité générale</h6>
+                                        <h6 id="liquiditeGenerale" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 3 ? analyses[3].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 3 ? analyses[3].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 3 ? analyses[3].solution : 'N/A'}"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted font-semibold">Liquidité réduite</h6>
+                                        <h6 id="liquiditeReduite" class="font-extrabold mb-0" th:text="${analyses != null and analyses.size() > 4 ? analyses[4].valeur : 'N/A'}"></h6>
+                                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 4 ? analyses[4].interpretation : 'N/A'}"></span></p>
+                                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 4 ? analyses[4].solution : 'N/A'}"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="d-flex justify-content-center">Levier Financier</h3>
+                            </div>
+                            <div class="card-body">
+                                <h2 class="d-flex justify-content-center font-semibold" style="font-size: 2rem; font-weight: bold; color: DarkSlateBlue;">
+                                    <span id="levierFinancier" th:text="${analyses != null and analyses.size() > 7 ? analyses[7].valeur : 'N/A'}"></span>
+                                </h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="card-title">Interprétation</h6>
+                                        <p class="card-text" th:text="${analyses != null and analyses.size() > 7 ? analyses[7].interpretation : 'N/A'}"></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="card-title">Solution</h6>
+                                        <p class="card-text" th:text="${analyses != null and analyses.size() > 7 ? analyses[7].solution : 'N/A'}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/vendors/apexcharts/apexcharts.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+
+    <script>
+        // Rentabilité Chart
+        const rentabiliteData = [
+            parseFloat(document.getElementById("margeNette").textContent),
+            parseFloat(document.getElementById("ROA").textContent),
+            parseFloat(document.getElementById("ROE").textContent)
+        ];
+        const rentabiliteLabels = ["Marge nette", "ROA", "ROE"];
+        new ApexCharts(document.querySelector("#multiple"), {
+            chart: { type: "radialBar", height: 'auto' },
+            series: rentabiliteData,
+            labels: rentabiliteLabels,
+        }).render();
+
+        // Liquidité Chart
+        const liquiditeData = [
+            parseFloat(document.getElementById("liquiditeGenerale").textContent),
+            parseFloat(document.getElementById("liquiditeReduite").textContent)
+        ];
+        new ApexCharts(document.querySelector("#simpleDonut"), {
+            chart: { type: "donut" , height: 'auto' },
+            series: liquiditeData,
+            labels: ["Liquidité générale", "Liquidité réduite"],
+        }).render();
+
+        // Endettement Chart
+        const endettementData = [
+            parseFloat(document.getElementById("endettementGlobal").textContent),
+            parseFloat(document.getElementById("couverture").textContent)
+        ];
+        new ApexCharts(document.querySelector("#basic"), {
+            chart: { type: "polarArea" },
+            series: endettementData,
+            labels: ["Endettement global", "Couverture"],
+        }).render();
+    </script>
+</body>
+
+</html>

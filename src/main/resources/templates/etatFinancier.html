@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etat Financier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="etatFinancier.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(37, 37, 37); padding: 2px 0;">
+        <div class="container text-center">
+            <!-- Titre centré -->
+            <h3 class="navbar-title text-white w-100" style="font-size: 2rem; margin-bottom: 10px;">État Financier</h3>
+            
+            <!-- Menu de navigation aligné en bas -->
+            <div class="collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-4" th:href="@{/formulaire}" style="font-size: 1.2rem;">Insertion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-4" th:href="@{/etatFinancier}" style="font-size: 1.2rem;">État Financier</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-4" th:href="@{/analyse}" style="font-size: 1.2rem;">Analyse Financier</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<div class="container mt-5">
+    <h1 class="text-center">Etat Financier</h1>
+
+    <!-- Formulaire de sélection de la date -->
+    <form action="#" th:action="@{/etatFinancier}" method="post">
+        <div class="mb-3">
+            <label for="date" class="form-label"  style="width: 50%; margin-left: 25%;">Sélectionner une date</label>
+            <input type="date" id="date" name="date"  style="width: 50%; margin-left: 25%;"class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-submit">Afficher Etat Financier</button>
+    </form>
+    <!-- Message d'erreur s'il y en a -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+    <!-- Vérification si les données sont disponibles -->
+    <div class="mt-4" th:if="${hierarchie != null}">
+        <!-- Tableaux Bilan -->
+        <h2>Bilan</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Actifs</h3>
+                <table class="table table-bordered" style="border : rgb(0, 0, 0); color:rgb(0, 0, 0); background-color:rgb(230, 222, 222); ">
+                    <thead>
+                        <tr>
+                            <th>Sous-catégorie</th>
+                            <th>Poste</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Itération sur chaque sous-catégorie dans "Actifs" -->
+                        <th:block th:each="entry : ${hierarchie['Actifs']}">
+                            <!-- "entry" est une map avec la clé (sous-catégorie) et la valeur (les postes) -->
+                            <th:block th:each="poste, montant : ${entry.value}">
+                                <tr>
+                                    <!-- Affichage de la sous-catégorie -->
+                                    <td th:text="${entry.key}"></td>
+                                    <!-- Affichage du poste et de son montant -->
+                                    <td th:text="${poste.key}"></td>
+                                    <td th:text="${poste.value}"></td>
+                                </tr>
+                            </th:block>
+                            <!-- Total pour la sous-catégorie -->
+                            <tr>
+                                <td colspan="2" class="fw-bold text-end">Total</td>
+                                <td class="fw-bold" th:text="${sommeParSousCategorie['Actifs'][entry.key]}"></td>
+                            </tr>
+                        </th:block>
+                        <tr class="table-dark">
+                            <td colspan="3" class="fw-bold text-end">Total Actifs</td>
+                            <td class="fw-bold" th:text="${resultatsFinanciers['Actifs']}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h3>Passifs</h3>
+                <table class="table table-bordered" style="border : rgb(0, 0, 0); color:rgb(0, 0, 0); background-color:rgb(230, 222, 222); ">
+                    <thead>
+                        <tr>
+                            <th>Sous-catégorie</th>
+                            <th>Poste</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Itération sur chaque sous-catégorie dans "Passifs" -->
+                        <th:block th:each="entry : ${hierarchie['Passifs']}">
+                            <!-- "entry" est une map avec la clé (sous-catégorie) et la valeur (les postes) -->
+                            <th:block th:each="poste, montant : ${entry.value}">
+                                <tr>
+                                    <!-- Affichage de la sous-catégorie -->
+                                    <td th:text="${entry.key}"></td>
+                                    <!-- Affichage du poste et de son montant -->
+                                    <td th:text="${poste.key}"></td>
+                                    <td th:text="${poste.value}"></td>
+                                </tr>
+                            </th:block>
+                            <!-- Total pour la sous-catégorie -->
+                            <tr>
+                                <td colspan="2" class="fw-bold text-end">Total</td>
+                                <td class="fw-bold" th:text="${sommeParSousCategorie['Passifs'][entry.key]}"></td>
+                            </tr>
+                        </th:block>
+                        <tr class="table-dark">
+                            <td colspan="3" class="fw-bold text-end">Total Passifs</td>
+                            <td class="fw-bold" th:text="${resultatsFinanciers['Passifs']}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2>Compte de résultat</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Revenus</h3>
+                <table class="table table-bordered"  style="background-color: #2e2e2e; color:white;">
+                    <thead>
+                        <tr>
+                            <th>Sous-catégorie</th>
+                            <th>Poste</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Itération sur chaque sous-catégorie dans "Revenus" -->
+                        <th:block th:each="entry : ${hierarchie['Revenus']}">
+                            <!-- "entry" est une map avec la clé (sous-catégorie) et la valeur (les postes) -->
+                            <th:block th:each="poste, montant : ${entry.value}">
+                                <tr>
+                                    <!-- Affichage de la sous-catégorie -->
+                                    <td th:text="${entry.key}"></td>
+                                    <!-- Affichage du poste et de son montant -->
+                                    <td th:text="${poste.key}"></td>
+                                    <td th:text="${poste.value}"></td>
+                                </tr>
+                            </th:block>
+                            <!-- Total pour la sous-catégorie -->
+                            <tr>
+                                <td colspan="2" class="fw-bold text-end">Total</td>
+                                <td class="fw-bold" th:text="${sommeParSousCategorie['Revenus'][entry.key]}"></td>
+                            </tr>
+                        </th:block>
+                        <tr class="table-dark">
+                            <td colspan="3" class="fw-bold text-end">Total Revenus</td>
+                            <td class="fw-bold" th:text="${resultatsFinanciers['Revenus']}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Charges</h3>
+                <table class="table table-bordered" style="background-color: #2e2e2e; color:white;">
+                    <thead>
+                        <tr>
+                            <th>Sous-catégorie</th>
+                            <th>Poste</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Itération sur chaque sous-catégorie dans "Charges" -->
+                        <th:block th:each="entry : ${hierarchie['Charges']}">
+                            <!-- "entry" est une map avec la clé (sous-catégorie) et la valeur (les postes) -->
+                            <th:block th:each="poste, montant : ${entry.value}">
+                                <tr>
+                                    <!-- Affichage de la sous-catégorie -->
+                                    <td th:text="${entry.key}"></td>
+                                    <!-- Affichage du poste et de son montant -->
+                                    <td th:text="${poste.key}"></td>
+                                    <td th:text="${poste.value}"></td>
+                                </tr>
+                            </th:block>
+                            <!-- Total pour la sous-catégorie -->
+                            <tr>
+                                <td colspan="2" class="fw-bold text-end">Total</td>
+                                <td class="fw-bold" th:text="${sommeParSousCategorie['Charges'][entry.key]}"></td>
+                            </tr>
+                        </th:block>
+                        <tr class="table-dark">
+                            <td colspan="3" class="fw-bold text-end">Total Charges</td>
+                            <td class="fw-bold" th:text="${resultatsFinanciers['Charges']}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+            <table class="table table-bordered" style="width:50%; margin-top: 2%; margin-left: 25%; border : rgb(0, 0, 0); color:rgb(0, 0, 0); background-color:rgb(230, 222, 222); " >
+                <tr class="table" style="border : rgb(0, 0, 0);">
+                    <td colspan="2" class="fw-bold text-end" >Résultat d'exploitation</td>
+                    <td class="fw-bold" th:text="${resultatsFinanciers['Resultat d exploitation']}"></td>
+                </tr>
+                <tr class="table" style="border : rgb(0, 0, 0);">
+                    <td colspan="2" class="fw-bold text-end">Résultat financier</td>
+                    <td class="fw-bold" th:text="${resultatsFinanciers['Resultat financier']}"></td>
+                </tr>
+                <tr class="table" style="border : rgb(0, 0, 0);">
+                    <td colspan="2" class="fw-bold text-end">Résultat courant avant impôts</td>
+                    <td class="fw-bold" th:text="${resultatsFinanciers['Resultat courant avant impots']}"></td>
+                </tr>
+                <tr class="table" style="border : rgb(0, 0, 0);">
+                    <td colspan="2" class="fw-bold text-end">Résultat net</td>
+                    <td class="fw-bold" th:text="${resultatsFinanciers['Resultat net']}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse financière</title>
+    <!-- Ajout des fichiers Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="analyse.css" rel="stylesheet">
+
+    
+</head>
+<body style="background-color : rgb(228, 226, 226);">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(37, 37, 37); padding: 2px 0;">
+        <div class="container text-center">
+            <!-- Titre centré -->
+            <h3 class="navbar-title text-white w-100" style="font-size: 2rem; margin-bottom: 10px;">État Financier</h3>
+            
+            <!-- Menu de navigation aligné en bas -->
+            <div class="collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-4" th:href="@{/formulaire}" style="font-size: 1.2rem;">Insertion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-4" th:href="@{/etatFinancier}" style="font-size: 1.2rem;">État Financier</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-4" th:href="@{/analyse}" style="font-size: 1.2rem;">Analyse Financier</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Analyse financière de l'entreprise Ketch'App</h1>
+
+        <!-- Formulaire de sélection de date -->
+        <form action="/analyse" method="post" class="mb-4">
+            <div class="form-group">
+                <label for="date"   style="width: 50%; margin-left: 25%;">Sélectionner une date :</label>
+                <input type="date"   style="width: 50%; margin-left: 25%;" id="date" name="date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-submit"   style="width: 50%; margin-left: 25%;">Analyser</button>
+        </form>
+
+        <hr>
+
+        <!-- Message d'erreur s'il y en a -->
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Section 1 : Rentabilité -->
+        <div class="section mt-6" style="border:none;box-shadow:0 0 20px rgba(0, 0, 0, 0.3); border-radius : 5%; padding: 5%; background-color: white;">
+            <h2>Rentabilité</h2>
+            <canvas id="chartRentabilite"></canvas>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Marge nette :</strong> <span id="margeNette" th:text="${analyses != null and analyses.size() > 0 ? analyses[0].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 0 ? analyses[0].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 0 ? analyses[0].solution : 'N/A'}"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>ROA (Return on Assets) :</strong> <span id="ROA" th:text="${analyses != null and analyses.size() > 1 ? analyses[1].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 1 ? analyses[1].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 1 ? analyses[1].solution : 'N/A'}"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>ROE (Return on Equity) :</strong> <span id="ROE" th:text="${analyses != null and analyses.size() > 2 ? analyses[2].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 2 ? analyses[2].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 2 ? analyses[2].solution : 'N/A'}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Section 2 : Liquidité -->
+        <div class="section mt-6"   style="border:none;box-shadow:0 0 20px rgba(0, 0, 0, 0.3); border-radius : 5%; padding: 5%; background-color: white;">
+            <h2>Liquidité</h2>
+            <canvas class="mt-3" id="chartLiquidite"></canvas>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Liquidité générale :</strong> <span id="liquiditeGenerale" th:text="${analyses != null and analyses.size() > 3 ? analyses[3].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 3 ? analyses[3].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 3 ? analyses[3].solution : 'N/A'}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Liquidité réduite :</strong> <span id="liquiditeReduite" th:text="${analyses != null and analyses.size() > 4 ? analyses[4].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 4 ? analyses[4].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 4 ? analyses[4].solution : 'N/A'}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Section 3 : Endettement -->
+        <div class="section mt-6"   style="border:none;box-shadow:0 0 20px rgba(0, 0, 0, 0.3); border-radius : 5%; padding: 5%; background-color: white;">
+            <h2>Endettement</h2>
+            <canvas id="chartEndettement"></canvas>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Endettement global :</strong> <span id="endettementGlobal" th:text="${analyses != null and analyses.size() > 5 ? analyses[5].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 5 ? analyses[5].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 5 ? analyses[5].solution : 'N/A'}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Couverture...</strong> <span id="couverture" th:text="${analyses != null and analyses.size() > 6 ? analyses[6].valeur : 'N/A'}"></span></p>
+                        <p><strong>Interprétation :</strong> <span th:text="${analyses != null and analyses.size() > 6 ? analyses[6].interpretation : 'N/A'}"></span></p>
+                        <p><strong>Solution :</strong> <span th:text="${analyses != null and analyses.size() > 6 ? analyses[6].solution : 'N/A'}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Section 4 : Levier financier -->
+        <div class="section mt-6" style="border:none;box-shadow:0 0 20px rgba(0, 0, 0, 0.3); border-radius : 5%; padding: 5%; background-color: white; margin-top:10%;">
+            <h2>Levier financier</h2>
+            <div class="mt-4">
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <p style="font-size: 2rem; font-weight: bold; color: DarkSlateBlue;">
+                            <span id="levierFinancier" th:text="${analyses != null and analyses.size() > 7 ? analyses[7].valeur : 'N/A'}"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Interprétation :</strong></p>
+                        <p th:text="${analyses != null and analyses.size() > 7 ? analyses[7].interpretation : 'N/A'}"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Solution :</strong></p>
+                        <p th:text="${analyses != null and analyses.size() > 7 ? analyses[7].solution : 'N/A'}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+ 
+        <hr>
+
+        <!-- Section 4 : Conclusion -->
+    <div class="section mt-6" style=" border:none;box-shadow:0 0 20px rgba(0, 0, 0, 0.3); border-radius : 5%; background-color: white; width: 70%; margin: 0 auto; padding: 20px; color: black;">
+        <h2 style="text-align: center; font-size: 1.5em; margin-bottom: 20px;"><strong>Conclusion</strong></h2>
+        <div class="card mb-4" style="background-color: white; border: none;">
+            <div class="card-body">
+                <p><strong>Conclusion générale :</strong></p>
+                <p id="conclusionGenerale" style="font-size: 1.1em; font-weight: normal; color: black;" th:text="${conclusion}"></p>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+
+    <!-- Ajout du script Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Ajout de Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        
+        // Rentabilité Graphique
+        const rentabiliteData = [
+            parseFloat(document.getElementById("margeNette").textContent),
+            parseFloat(document.getElementById("ROA").textContent),
+            parseFloat(document.getElementById("ROE").textContent)
+        ];
+    
+        const rentabiliteLabels = ['Marge nette', 'ROA', 'ROE'];
+    
+        const rentabiliteCtx = document.getElementById('chartRentabilite').getContext('2d');
+        new Chart(rentabiliteCtx, {
+            type: 'bar',
+            data: {
+                labels: rentabiliteLabels,
+                datasets: [{
+                    label: 'Rentabilité (%)',
+                    data: rentabiliteData,
+                    backgroundColor: ['CornflowerBlue', 'LightCoral', 'RosyBrown']
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    
+        // Liquidité Graphique
+        const liquiditeData = [
+            parseFloat(document.getElementById("liquiditeGenerale").textContent),
+            parseFloat(document.getElementById("liquiditeReduite").textContent)
+        ];
+    
+        const liquiditeLabels = ['Liquidité générale', 'Liquidité réduite'];
+    
+        const liquiditeCtx = document.getElementById('chartLiquidite').getContext('2d');
+        new Chart(liquiditeCtx, {
+            type: 'bar',
+            data: {
+                labels: liquiditeLabels,
+                datasets: [{
+                    label: 'Liquidité (%)',
+                    data: liquiditeData,
+                    backgroundColor: ['PaleTurquoise', 'SlateGray']
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    
+        const endettementData = [
+            parseFloat(document.getElementById("endettementGlobal").textContent || 0),
+            parseFloat(document.getElementById("couverture").textContent || 0)
+        ];
+        const endettementLabels = ['Endettement global', 'Couverture des intérêts'];
+        const endettementCtx = document.getElementById('chartEndettement').getContext('2d');
+        new Chart(endettementCtx, {
+            type: 'bar',
+            data: {
+                labels: endettementLabels,
+                datasets: [{
+                    label: 'Endettement (%)',
+                    data: endettementData,
+                    backgroundColor: ['Khaki', 'DarkSeaGreen']
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>

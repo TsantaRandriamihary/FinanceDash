@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/dashboardFinancier.css" > 
+    
+     
+    <title>Analyse financière</title>
+</head>
+<body>
+    <header>
+        Dashboard Financier - Ketch'App
+    </header>
+
+    <div class="container">
+        <!-- Formulaire de sélection de date -->
+        <form action="#" th:action="@{/analyse}" method="post" id="filterForm">
+            <h3>Filtrer les résultats</h3>
+            <div class="form-group">
+                <label for="date">Sélectionner une date :</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="button-group">
+                <button type="submit">Analyser</button>
+            </div>
+        </form>
+
+        <!-- Section des résultats -->
+        <div class="loading" id="loadingMessage">Chargement des données...</div>
+
+        <!-- Résumé des calculs -->
+        <div class="section" id="summarySection" th:if="${conclusion}">
+            <h2>Résultats de l'analyse</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Analyse</th>
+                            <th>Valeur</th>
+                            <th>Interprétation</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="analyse : ${analyses}">
+                            <td><strong th:text="${analyse.nomAnalyse}"></strong></td>
+                            <td><span th:text="${analyse.valeur}"></span></td>
+                            <td><span th:text="${analyse.interpretation}"></span></td>
+                            <td><span th:text="${analyse.solution}"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Graphiques de Rentabilité -->
+        <div class="section" id="profitabilitySection">
+            <h2>Rentabilité</h2>
+            <canvas id="chartRentabilite"></canvas>
+            <div class="interpretation">
+                <p><strong>Interprétation :</strong></p>
+                <p>Les graphiques ci-dessous montrent la marge nette, le ROE et le ROA, indiquant respectivement une excellente rentabilité, un fort retour sur les actifs et une bonne rentabilité pour les actionnaires.</p>
+            </div>
+        </div>
+
+        <!-- Graphique de Liquidité -->
+        <div class="section" id="liquiditySection">
+            <h2>Liquidité</h2>
+            <canvas id="chartLiquidite"></canvas>
+        </div>
+
+        <!-- Graphique d'Endettement -->
+        <div class="section" id="debtSection">
+            <h2>Endettement</h2>
+            <canvas id="chartEndettement"></canvas>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="section" id="conclusionSection" th:if="${conclusion}">
+            <h2>Conclusion</h2>
+            <p><strong>Conclusion générale :</strong> <span th:text="${conclusion}"></span></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
